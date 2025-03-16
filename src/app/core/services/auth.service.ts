@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {AuthResponse, RegisterRequest} from '../../features/auth';
+import {AuthResponse, RegisterRequest, UserLogin} from '../../features/auth';
 import {Observable, tap} from 'rxjs';
 import {UserResponse} from '../models/user.model';
 
@@ -24,7 +24,7 @@ export class AuthService {
     return this.http.post<UserResponse>(`${this.apiUrl}/register`, formData);
   }
 
-  login(credentials: { username: string; password: string }): Observable<AuthResponse> {
+  login(credentials: UserLogin): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => localStorage.setItem(this.tokenKey, response.token))
     );
