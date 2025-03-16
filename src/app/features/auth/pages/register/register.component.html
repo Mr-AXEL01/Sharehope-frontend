@@ -1,0 +1,94 @@
+<div class="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
+  <h2 class="text-2xl font-bold mb-4">Register for ShareHope</h2>
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <div>
+      <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        [class.border-red-500]="registerForm.get('email')?.touched && registerForm.get('email')?.invalid"
+      >
+      @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+        <div class="text-red-500 text-sm">
+          @if (registerForm.get('email')?.errors?.['required']) {
+            <span>Email is required.</span>
+          }
+          @if (registerForm.get('email')?.errors?.['email']) {
+            <span>Please enter a valid email.</span>
+          }
+        </div>
+      }
+    </div>
+
+    <div>
+      <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        [class.border-red-500]="registerForm.get('password')?.touched && registerForm.get('password')?.invalid"
+      >
+      @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
+        <div class="text-red-500 text-sm">
+          @if (registerForm.get('password')?.errors?.['required']) {
+            <span>Password is required.</span>
+          }
+          @if (registerForm.get('password')?.errors?.['minlength']) {
+            <span>Password must be at least 6 characters.</span>
+          }
+        </div>
+      }
+    </div>
+
+    <div>
+      <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+      <input
+        id="phone"
+        type="text"
+        formControlName="phone"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        [class.border-red-500]="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid"
+      >
+
+      @if (registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid) {
+        <div class="text-red-500 text-sm">
+          Phone is required.
+        </div>
+      }
+    </div>
+
+    <div>
+      <label for="avatar" class="block text-sm font-medium text-gray-700">Avatar (optional)</label>
+      <input
+        id="avatar"
+        type="file"
+        (change)="onFileChange($event)"
+        class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+      >
+    </div>
+
+    @if (errorMessage) {
+      <div class="text-red-500 text-sm">{{ errorMessage }}</div>
+    }
+
+    <button
+      type="submit"
+      [disabled]="isSubmitting || registerForm.invalid"
+      class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:bg-gray-400"
+    >
+      @if (!isSubmitting) {
+        <span>Register</span>
+      }
+      @if (isSubmitting) {
+        <span>Registering...</span>
+      }
+    </button>
+
+    <div class="text-center mt-4">
+      <p>Already have an account? <a [routerLink]="['/auth/login']" class="text-indigo-600 hover:underline">Login</a></p>
+    </div>
+  </form>
+</div>
