@@ -56,5 +56,4 @@ export class AuthService {
   updateToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
   }
-
 }
