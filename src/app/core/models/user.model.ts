@@ -10,7 +10,17 @@ export interface UserResponse {
   username: string;
   email: string;
   phone: string;
-  roles: string[];
+  roles: {role: string} [];
   // articles: number[];
   avatar: string;
+}
+
+export interface UserUpdateDTO {
+  username?: string;
+  email?: string;
+  phone?: string;
+}
+
+export interface UserAuthResponse extends UserResponse {
+  token: string;
 }

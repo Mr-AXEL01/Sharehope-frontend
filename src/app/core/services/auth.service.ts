@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {AuthResponse, RegisterRequest, UserLogin} from '../../features/auth';
 import {Observable, tap} from 'rxjs';
 import {UserResponse} from '../models/user.model';
+import {jwtDecode} from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,20 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+
+  getLoggedInUser(): Observable<UserResponse> {
+    const token = this.getToken();
+    if (!token) {
+      throw new Error('No token found');
+    }
+
+    const decodedToken: any = jwtDecode(token);
+    return this.http.get<UserResponse>(`http://localhost:8080/api/v1/profile/${decodedToken.userId}`);
+  }
+
+  updateToken(token: string): void {
+    localStorage.setItem(this.tokenKey, token);
   }
 
 }
