@@ -14,44 +14,58 @@ import {Router, RouterLink} from '@angular/router';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-  registerForm: FormGroup;
-  isSubmitting = false;
-  errorMessage: string | null = null;
+  registerForm: FormGroup
+  isSubmitting = false
+  errorMessage: string | null = null
+  avatarPreview: string | null = null
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
   ) {
     this.registerForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      phone: ['', [Validators.required]],
+      email: ["", [Validators.required, Validators.email]],
+      password: ["", [Validators.required, Validators.minLength(6)]],
+      phone: ["", [Validators.required]],
       avatar: [null],
-    });
+      terms: [false, Validators.requiredTrue],
+    })
   }
 
   onFileChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
+    const input = event.target as HTMLInputElement
     if (input.files && input.files.length) {
-      this.registerForm.patchValue({ avatar: input.files[0] });
+      const file = input.files[0]
+      this.registerForm.patchValue({ avatar: file })
+
+      const reader = new FileReader()
+      reader.onload = () => {
+        this.avatarPreview = reader.result as string
+
+        const previewElement = document.querySelector(".avatar-preview")
+        if (previewElement) {
+          previewElement.innerHTML = `<img src="${this.avatarPreview}" alt="Avatar preview" class="w-16 h-16 rounded-full">`
+        }
+      }
+      reader.readAsDataURL(file)
     }
   }
 
   onSubmit() {
     if (this.registerForm.valid) {
-      this.isSubmitting = true;
-      this.errorMessage = null;
+      this.isSubmitting = true
+      this.errorMessage = null
       this.authService.register(this.registerForm.value).subscribe({
         next: () => {
-          this.isSubmitting = false;
-          this.router.navigate(['/auth/login']);
+          this.isSubmitting = false
+          this.router.navigate(["/auth/login"])
         },
-        error: err => {
-          this.isSubmitting = false;
-          this.errorMessage = err.error?.message || 'Registration failed. Please try again.';
+        error: (err) => {
+          this.isSubmitting = false
+          this.errorMessage = err.error?.message || "Registration failed. Please try again."
         },
-      });
+      })
     }
   }
 }
