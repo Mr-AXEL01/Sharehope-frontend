@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {AuthResponse, RegisterRequest, UserLogin} from '../../features/auth';
 import {Observable, tap} from 'rxjs';
 import {UserResponse} from '../models/user.model';
 import {jwtDecode} from 'jwt-decode';
+import {Router} from '@angular/router';
+import {CustomJwtPayload} from '../models/jwt.module';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +13,13 @@ import {jwtDecode} from 'jwt-decode';
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/v1/auth';
   private tokenKey = 'access_token';
+  private token: string | null = null;
+  private roles: string[] = [];
 
-  constructor(private readonly http: HttpClient) { }
+  constructor(
+    private readonly http: HttpClient,
+    private router: Router,
+  ) { }
 
   register(user: RegisterRequest): Observable<UserResponse> {
     const formData = new FormData();
@@ -30,6 +37,26 @@ export class AuthService {
       tap(response => localStorage.setItem(this.tokenKey, response.token))
     );
   }
+
+  loginAndRedirect(credentials: UserLogin): void {
+    this.login(credentials).subscribe({
+      next: () => {
+        this.getRoles();
+
+        if (this.isAdmin()) {
+          this.router.navigate(['/dashboard']);
+        } else if (this.isUser()) {
+          this.router.navigate(['/profile']);
+        } else {
+          this.router.navigate(['/auth/login']);
+        }
+      },
+      error: err => {
+        console.error('Login failed:', err);
+      }
+    });
+  }
+
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
@@ -55,5 +82,29 @@ export class AuthService {
 
   updateToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);
+  }
+
+  getRoles() {
+    this.token = this.getToken();
+    if (this.token) {
+      const decodedToken = jwtDecode<CustomJwtPayload>(this.token);
+      this.roles = Array.isArray(decodedToken.roles)
+        ? decodedToken.roles.map(role => (typeof role === 'string' ? role : role.role))
+        : [];
+    } else {
+      this.roles = [];
+    }
+  }
+
+  hasRole(requiredRole: string): boolean {
+    return this.roles.includes(requiredRole);
+  }
+
+  isAdmin(): boolean {
+    return this.hasRole('ROLE_ADMIN');
+  }
+
+  isUser(): boolean {
+    return this.hasRole('ROLE_USER');
   }
 }
