@@ -50,7 +50,7 @@ export class LoginComponent {
         },
         error: err => {
           this.isSubmitting = false;
-          this.errorMessage = err.error?.message || 'Login failed. Please try again.';
+          this.errorMessage = err.error?.message ? 'Username or password incorrect' : 'Login failed. Please try again.';
         },
       });
     }
