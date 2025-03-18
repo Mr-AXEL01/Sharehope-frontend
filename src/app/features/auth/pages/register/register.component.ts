@@ -22,7 +22,6 @@ export class RegisterComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router,
   ) {
     this.registerForm = this.fb.group({
       email: ["", [Validators.required, Validators.email]],
@@ -56,10 +55,12 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.isSubmitting = true
       this.errorMessage = null
-      this.authService.register(this.registerForm.value).subscribe({
+
+      const formData = this.registerForm.value;
+      this.authService.register(formData).subscribe({
         next: () => {
-          this.isSubmitting = false
-          this.router.navigate(["/auth/login"])
+          const credentials = { username: formData.email, password: formData.password };
+          this.authService.loginAndRedirect(credentials);
         },
         error: (err) => {
           this.isSubmitting = false
