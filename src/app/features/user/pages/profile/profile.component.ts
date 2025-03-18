@@ -140,9 +140,9 @@ export class ProfileComponent implements OnInit{
         this.passwordForm.reset()
       },
       error: (error) => {
-        this.isUpdatingPassword = false
+        this.isUpdatingPassword = false;
         if (error.error && error.error.errors) {
-          this.passwordError = error.error.errors.newPassword || "An error occurred";
+          this.passwordError = error.error.errors || "An error occurred";
         } else {
           this.passwordError = "An error occurred";
         }
