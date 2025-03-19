@@ -57,7 +57,6 @@ export class AuthService {
     });
   }
 
-
   logout(): void {
     localStorage.removeItem(this.tokenKey);
   }
