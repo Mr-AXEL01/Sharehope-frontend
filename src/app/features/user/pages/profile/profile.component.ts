@@ -141,8 +141,14 @@ export class ProfileComponent implements OnInit{
       },
       error: (error) => {
         this.isUpdatingPassword = false;
-        if (error.error && error.error.errors) {
-          this.passwordError = error.error.errors || "An error occurred";
+        if (error.error) {
+          if (typeof error.error.errors === "object") {
+            this.passwordError = Object.values(error.error.errors).join(", ");
+          } else if (typeof error.error.errors === "string") {
+            this.passwordError = error.error.errors;
+          } else {
+            this.passwordError = error.error.message || "An error occurred";
+          }
         } else {
           this.passwordError = "An error occurred";
         }
