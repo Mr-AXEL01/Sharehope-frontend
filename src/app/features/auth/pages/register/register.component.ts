@@ -60,7 +60,10 @@ export class RegisterComponent {
       this.authService.register(formData).subscribe({
         next: () => {
           const credentials = { username: formData.email, password: formData.password };
-          this.authService.loginAndRedirect(credentials);
+          this.authService.loginAndRedirect(credentials, (err) => {
+            this.isSubmitting = false;
+            this.errorMessage = err.error?.message || "Login failed after registration. Please try again.";
+          });
         },
         error: (err) => {
           this.isSubmitting = false

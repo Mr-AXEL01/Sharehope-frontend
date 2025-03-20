@@ -34,7 +34,10 @@ export class LoginComponent {
       this.errorMessage = null;
 
       const credentials = this.loginForm.value;
-      this.authService.loginAndRedirect(credentials);
+      this.authService.loginAndRedirect(credentials, (err) => {
+        this.isSubmitting = false;
+        this.errorMessage = (err.error?.message) ? 'Username or password are incorrect' : 'Login failed. Please try again.';
+      });
     }
   }
 }

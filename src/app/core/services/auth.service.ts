@@ -38,7 +38,7 @@ export class AuthService {
     );
   }
 
-  loginAndRedirect(credentials: UserLogin): void {
+  loginAndRedirect(credentials: UserLogin, onError?: (err: any) => void): void {
     this.login(credentials).subscribe({
       next: () => {
         this.getRoles();
@@ -53,6 +53,9 @@ export class AuthService {
       },
       error: err => {
         console.error('Login failed:', err);
+        if (onError) {
+          onError(err);
+        }
       }
     });
   }
