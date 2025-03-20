@@ -1,0 +1,239 @@
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="relative bg-cover bg-center min-h-[600px] flex items-center" style="background-image: url('/images/hero-bg.jpg')">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="container mx-auto px-4 py-20 relative z-10">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          Connecting Medical Aid to Those in Need
+        </h1>
+        <p class="text-xl text-white text-opacity-90 mb-8">
+          ShareHope is a platform that connects donors with individuals and communities in need of medical assistance.
+          Together, we can make healthcare accessible to everyone.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <a [routerLink]="['/donate']" class="inline-block bg-white text-blue-600 font-semibold py-3 px-6 rounded-md text-center transition-all duration-200 hover:bg-gray-50 hover:-translate-y-0.5 hover:shadow-md">
+            Make a Donation
+          </a>
+          <a [routerLink]="['/requests']" class="inline-block bg-transparent text-white font-semibold py-3 px-6 rounded-md border-2 border-white text-center transition-all duration-200 hover:bg-white/10 hover:-translate-y-0.5">
+            Request Help
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Statistics Section -->
+  <section class="relative">
+    <div class="container mx-auto px-4 py-16">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Our Impact</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Through the generosity of our donors and the dedication of our partners, we've made a significant impact on healthcare accessibility worldwide.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        @for (stat of stats; track $index) {
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center transform transition-transform hover:scale-105">
+            <div class="text-blue-600 mb-4 flex justify-center">
+              <ng-container>
+              @switch (stat.icon) {
+                @case ('heart') {
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#FF0000"/>
+                  </svg>
+                }
+                @case ('users') {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                }
+                @case ('star') {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  </svg>
+                }
+                @case ('globe') {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                }
+              }
+              </ng-container>
+            </div>
+            <h3 class="text-4xl font-bold text-gray-800 mb-2">{{ stat.value }}</h3>
+            <p class="text-gray-600">{{ stat.label }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Stories Section -->
+  <section class="relative bg-gray-50">
+    <div class="container mx-auto px-4 py-16">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Success Stories</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Real stories of hope, healing, and transformation made possible through the ShareHope community.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        @for (story of featuredStories ; track $index) {
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="h-48 bg-gray-300 relative">
+              <img [src]="story.image" alt="{{ story.title }}" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-800 mb-2">{{ story.title }}</h3>
+              <p class="text-gray-600 mb-4">{{ story.summary }}</p>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-500">{{ story.author }}</span>
+                <span class="text-sm text-gray-500">{{ story.date | date:'mediumDate' }}</span>
+              </div>
+              <a [routerLink]="['/success-stories', story.id]" class="mt-4 inline-block text-blue-600 hover:text-blue-800 font-medium">
+                Read Full Story →
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="text-center mt-10">
+        <a [routerLink]="['/success-stories']" class="inline-block bg-transparent text-blue-600 font-semibold py-3 px-6 rounded-md border-2 border-blue-600 text-center transition-all duration-200 hover:bg-blue-600 hover:text-white">
+          View All Success Stories
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="relative">
+    <div class="container mx-auto px-4 py-16">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">How It Works</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          ShareHope makes it easy to make a difference. Here's how you can get involved.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        @for (step of howItWorks; track $index) {
+          <div class="text-center">
+            <div class="relative">
+              <div class="bg-blue-100 rounded-full p-6 inline-flex mb-6 text-blue-600">
+                <ng-container>
+                  @switch (step.icon) {
+                    @case ('user-plus') {
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                      </svg>
+                    }
+                    @case ('credit-card') {
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                    }
+                    @case ('chart-line') {
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                      </svg>
+                    }
+                  }
+                </ng-container>
+              </div>
+              @if ($index < howItWorks.length - 1) {
+                <div class="absolute top-1/2 left-full w-0.5 h-full bg-blue-100 hidden md:block"></div>
+              }
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">{{ step.title }}</h3>
+            <p class="text-gray-600">{{ step.description }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="text-center mt-12">
+        <a [routerLink]="['/auth/register']" class="inline-block bg-white text-blue-600 font-semibold py-3 px-6 rounded-md text-center transition-all duration-200 hover:bg-gray-50 hover:-translate-y-0.5 hover:shadow-md">
+          Get Started Today
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="relative bg-blue-600 text-white">
+    <div class="container mx-auto px-4 py-16">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold mb-4">What People Are Saying</h2>
+        <p class="text-lg text-white text-opacity-90 max-w-2xl mx-auto">
+          Hear from the people whose lives have been touched by the ShareHope community.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        @for (testimonial of testimonials; track $index) {
+          <div class="bg-white bg-opacity-10 backdrop-blur-sm p-6 rounded-lg">
+            <div class="mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-300" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+              </svg>
+            </div>
+            <p class="text-lg mb-6">{{ testimonial.quote }}</p>
+            <div class="flex items-center">
+              <div class="w-12 h-12 rounded-full bg-blue-200 mr-4 overflow-hidden">
+                <img [src]="testimonial.image" alt="{{ testimonial.author }}" class="w-full h-full object-cover">
+              </div>
+              <div>
+                <h4 class="font-bold">{{ testimonial.author }}</h4>
+                <p class="text-sm text-white text-opacity-80">{{ testimonial.role }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Partners Section -->
+  <section class="relative">
+    <div class="container mx-auto px-4 py-16">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Our Partners</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          We collaborate with trusted organizations to maximize our impact and reach.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+        @for (partner of partners; track $index) {
+          <div class="grayscale hover:grayscale-0 transition-all">
+            <img [src]="partner.logo" [alt]="partner.name" class="h-12 md:h-16">
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="relative bg-gray-50">
+    <div class="container mx-auto px-4 py-16">
+      <div class="bg-blue-600 rounded-xl p-8 md:p-12 text-center text-white">
+        <h2 class="text-3xl font-bold mb-4">Ready to Make a Difference?</h2>
+        <p class="text-lg text-white text-opacity-90 max-w-2xl mx-auto mb-8">
+          Join thousands of donors and recipients on ShareHope. Together, we can bridge the gap in medical care accessibility.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <a [routerLink]="['/donate']" class="inline-block bg-white text-blue-600 font-semibold py-3 px-6 rounded-md text-center transition-all duration-200 hover:bg-gray-50 hover:-translate-y-0.5 hover:shadow-md">
+            Make a Donation
+          </a>
+          <a [routerLink]="['/auth/register']" class="inline-block bg-transparent text-white font-semibold py-3 px-6 rounded-md border-2 border-white text-center transition-all duration-200 hover:bg-white/10 hover:-translate-y-0.5">
+            Create an Account
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
