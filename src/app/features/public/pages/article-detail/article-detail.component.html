@@ -1,0 +1,168 @@
+<div class="story-detail-container">
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="flex justify-center items-center py-24">
+      <app-loading-spinner [message]="'Loading story...'" [size]="'large'"></app-loading-spinner>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error) {
+    <div class="container mx-auto px-4 py-16">
+      <div class="bg-red-100 border border-red-200 text-red-700 px-6 py-4 rounded-md mb-6 flex items-start max-w-3xl mx-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <h2 class="text-lg font-bold mb-1">Story Not Found</h2>
+          <p>{{ error }}</p>
+          <a [routerLink]="['/success-stories']" class="mt-4 inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Success Stories
+          </a>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Story Content -->
+  @if (!isLoading && article) {
+    <!-- Hero Section with Image -->
+    <section>
+      <div class="relative h-96 md:h-[500px]">
+        <img [src]="getImageUrl()" [alt]="article.title" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70"></div>
+        <div class="absolute bottom-0 left-0 right-0 p-8 md:p-16">
+          <div class="container mx-auto">
+            <div class="max-w-3xl">
+              <div class="bg-blue-600 text-white text-xs uppercase font-bold tracking-wider py-1 px-3 rounded-full inline-block mb-4">
+                Success Story
+              </div>
+              <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+                {{ article.title }}
+              </h1>
+              <div class="flex items-center text-white">
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-3">
+                  {{ article.author.username.charAt(0).toUpperCase() }}
+                </div>
+                <div>
+                  <p class="font-medium">{{ article.author.username }}</p>
+                  <p class="text-sm text-white text-opacity-80">{{ getFormattedDate(article.createdAt) }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Story Body -->
+    <section>
+      <div class="container mx-auto px-4 py-12">
+        <div class="max-w-3xl mx-auto">
+          <!-- Story Description -->
+          <div class="mb-8">
+            <p class="text-xl text-gray-700 font-medium italic">{{ article.description }}</p>
+          </div>
+
+          <!-- Story Content -->
+          <div class="text-gray-700 max-w-[65ch] text-lg leading-7">
+            <p class="whitespace-pre-line mt-5 mb-5">{{ article.content }}</p>
+          </div>
+
+          <!-- Attachments (if any) -->
+          @if (article.attachments && article.attachments.length > 1) {
+            <div class="mt-12">
+              <h3 class="text-xl font-bold text-gray-800 mb-4">Photo Gallery</h3>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                @for (attachment of article.attachments.slice(1); track attachment) {
+                  <div class="relative pb-[75%]">
+                    <img [src]="attachment" alt="Story image" class="absolute inset-0 w-full h-full object-cover transform transition-transform hover:scale-105 rounded-lg">
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Back to Stories Link -->
+          <div class="mt-12 pt-6 border-t border-gray-200">
+            <a [routerLink]="['/articles']" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Success Stories
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Related Stories Section -->
+    <section class="bg-gray-50">
+      <div class="container mx-auto px-4 py-16">
+        <div class="max-w-3xl mx-auto">
+          <h2 class="text-2xl font-bold text-gray-800 mb-8">Share This Story</h2>
+
+          <div class="flex flex-wrap gap-3">
+            <a href="#" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"></path>
+              </svg>
+              Facebook
+            </a>
+
+            <a href="#" class="inline-flex items-center px-4 py-2 bg-[#1DA1F2] text-white rounded-md hover:bg-blue-500 transition-colors">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+              </svg>
+              Twitter
+            </a>
+
+            <a href="#" class="inline-flex items-center px-4 py-2 bg-[#0A66C2] text-white rounded-md hover:bg-blue-800 transition-colors">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"></path>
+              </svg>
+              LinkedIn
+            </a>
+
+            <a href="#" class="inline-flex items-center px-4 py-2 bg-[#25D366] text-white rounded-md hover:bg-green-600 transition-colors">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd" d="M20.11 3.89C17.94 1.71 14.99 0.5 11.87 0.5C5.5 0.5 0.3 5.7 0.3 12.06C0.3 14.25 0.9 16.38 2.04 18.24L0.17 24L6.1 22.16C7.89 23.2 9.89 23.74 11.93 23.74H11.94C18.3 23.74 23.5 18.54 23.5 12.17C23.5 9.05 22.29 6.11 20.11 3.89ZM11.87 21.81C10.09 21.81 8.35 21.29 6.84 20.31L6.5 20.11L2.94 21.18L4.03 17.71L3.81 17.36C2.74 15.78 2.17 13.99 2.17 12.06C2.17 6.74 6.54 2.37 11.88 2.37C14.48 2.37 16.92 3.39 18.72 5.19C20.52 6.99 21.54 9.43 21.53 12.03C21.53 17.37 17.16 21.81 11.87 21.81ZM17.03 14.51C16.75 14.37 15.34 13.68 15.08 13.59C14.82 13.5 14.64 13.45 14.45 13.73C14.27 14.01 13.72 14.65 13.56 14.83C13.41 15.01 13.25 15.04 12.97 14.9C12.69 14.76 11.75 14.46 10.64 13.47C9.78 12.7 9.21 11.75 9.05 11.47C8.9 11.19 9.03 11.05 9.17 10.92C9.29 10.81 9.44 10.63 9.57 10.47C9.7 10.31 9.75 10.2 9.84 10.01C9.93 9.83 9.89 9.67 9.82 9.53C9.75 9.39 9.18 7.97 8.95 7.41C8.73 6.87 8.5 6.94 8.34 6.93C8.19 6.92 8 6.92 7.82 6.92C7.64 6.92 7.34 6.99 7.08 7.27C6.82 7.55 6.08 8.24 6.08 9.66C6.08 11.08 7.11 12.45 7.24 12.63C7.37 12.81 9.2 15.61 11.97 16.86C12.62 17.14 13.13 17.31 13.53 17.44C14.19 17.65 14.79 17.62 15.27 17.55C15.8 17.47 16.94 16.86 17.17 16.21C17.4 15.56 17.4 15 17.33 14.86C17.26 14.72 17.08 14.65 16.8 14.51H17.03Z" clip-rule="evenodd"></path>
+              </svg>
+              WhatsApp
+            </a>
+
+            <button class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Copy Link
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="container mx-auto px-4 py-16">
+          <div class="bg-blue-600 rounded-xl p-8 md:p-12 text-center text-white max-w-4xl mx-auto">
+          <h2 class="text-3xl font-bold mb-4">Inspired by This Story?</h2>
+          <p class="text-lg text-white text-opacity-90 max-w-2xl mx-auto mb-8">
+            Your contribution can help create more success stories like this one. Join us in making healthcare accessible to everyone.
+          </p>
+          <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a [routerLink]="['/donate']" class="inline-block bg-white text-blue-600 font-semibold py-3 px-6 rounded-md text-center transition-all duration-200 hover:bg-gray-50 hover:-translate-y-0.5 hover:shadow-md">
+              Make a Donation
+            </a>
+            <a [routerLink]="['/auth/register']" class="inline-block bg-transparent text-white font-semibold py-3 px-6 rounded-md border-2 border-white text-center transition-all duration-200 hover:bg-white/10 hover:-translate-y-0.5">
+              Create an Account
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+</div>
