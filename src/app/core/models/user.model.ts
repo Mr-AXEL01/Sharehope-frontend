@@ -5,6 +5,13 @@ export interface UserRegister {
   avatar?: File;
 }
 
+export interface UserEmbeddedDTO {
+  id: number;
+  username: string;
+  email: string;
+  phone: string;
+}
+
 export interface UserResponse {
   id: number;
   username: string;
