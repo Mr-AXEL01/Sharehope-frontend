@@ -18,7 +18,7 @@
         <!-- Public Links - Always Visible -->
         <a [routerLink]="['/']" routerLinkActive="text-blue-600 font-medium" [routerLinkActiveOptions]="{exact: true}" class="text-gray-700 hover:text-blue-600 transition-colors">Home</a>
         <a [routerLink]="['/about']" routerLinkActive="text-blue-600 font-medium" class="text-gray-700 hover:text-blue-600 transition-colors">About</a>
-        <a [routerLink]="['/success-stories']" routerLinkActive="text-blue-600 font-medium" class="text-gray-700 hover:text-blue-600 transition-colors">Success Stories</a>
+        <a [routerLink]="['/articles']" routerLinkActive="text-blue-600 font-medium" class="text-gray-700 hover:text-blue-600 transition-colors">Success Stories</a>
 
         <!-- User Links - Visible when logged in -->
         @if (isLoggedIn) {
@@ -103,7 +103,7 @@
           <!-- Public Links -->
           <a [routerLink]="['/']" routerLinkActive="text-blue-600 font-medium" [routerLinkActiveOptions]="{exact: true}" class="text-gray-700 hover:text-blue-600 transition-colors py-2" (click)="closeMobileMenu()">Home</a>
           <a [routerLink]="['/about']" routerLinkActive="text-blue-600 font-medium" class="text-gray-700 hover:text-blue-600 transition-colors py-2" (click)="closeMobileMenu()">About</a>
-          <a [routerLink]="['/success-stories']" routerLinkActive="text-blue-600 font-medium" class="text-gray-700 hover:text-blue-600 transition-colors py-2" (click)="closeMobileMenu()">Success Stories</a>
+          <a [routerLink]="['/articles']" routerLinkActive="text-blue-600 font-medium" class="text-gray-700 hover:text-blue-600 transition-colors py-2" (click)="closeMobileMenu()">Success Stories</a>
 
           <!-- User Links -->
           @if (isLoggedIn) {
