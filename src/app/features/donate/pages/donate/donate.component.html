@@ -1,0 +1,401 @@
+<div class="donate-container">
+    <!-- Hero Section -->
+    <section class="relative bg-cover bg-center min-h-[400px] flex items-center" style="background-image: url('/images/hero-bg.jpg')">
+        <div class="absolute inset-0 bg-gradient-to-tr from-gray-900 to-black/50"></div>
+        <div class="container mx-auto px-4 py-20 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                    Make a Donation
+                </h1>
+                <p class="text-xl text-gray-100 text-opacity-90 mb-8">
+                    Your generosity can change lives. Every donation helps connect medical aid to those who need it most.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Donation Form Section -->
+    <section class="donation-form-section">
+        <div class="container mx-auto px-4 py-16">
+            <div class="max-w-3xl mx-auto">
+                <!-- Loading State -->
+                @if (isLoading) {
+                    <div class="flex justify-center items-center py-12">
+                        <app-loading-spinner [message]="'Loading donation form...'" [size]="'large'"></app-loading-spinner>
+                    </div>
+                }
+
+                <!-- Error State -->
+                @if (errorMessage) {
+                    <div class="mb-8">
+                        <app-alert [type]="'error'" [message]="errorMessage" [dismissible]="true" (dismissed)="errorMessage = null"></app-alert>
+                    </div>
+                }
+
+                <!-- Success State -->
+                @if (paymentSuccess) {
+                    <div class="bg-green-100 border border-green-200 text-green-700 px-6 py-8 rounded-lg mb-8 text-center">
+                        <div class="flex justify-center mb-4">
+                            <div class="bg-green-200 rounded-full p-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2">Thank You for Your Donation!</h2>
+                        <p class="text-lg mb-4">Your contribution will help provide medical aid to those in need.</p>
+                        <p class="text-sm mb-6">You will be redirected to your donations page shortly...</p>
+                        <div class="flex justify-center space-x-4">
+                            <a [routerLink]="['/my-donations']" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                                View My Donations
+                            </a>
+                            <a [routerLink]="['/']" class="px-6 py-2 border border-green-600 text-green-600 rounded-md hover:bg-green-50 transition-colors">
+                                Return Home
+                            </a>
+                        </div>
+                    </div>
+                }
+
+                <!-- Donation Form -->
+                @if (!isLoading && !paymentSuccess) {
+                    <div class="bg-white rounded-lg shadow-lg p-8 border border-gray-100">
+                        <div class="flex items-center mb-8">
+                            <div class="p-3 bg-blue-100 rounded-full mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-semibold text-gray-800">Donation Details</h2>
+                        </div>
+
+                        <form [formGroup]="donateForm" (ngSubmit)="submitDonation()" class="space-y-6">
+                            <div class="lg:flex justify-between gap-2">
+                                <!-- Category Field -->
+                                <div class="mb-6 w-full">
+                                    <label for="categoryId" class="block text-sm font-medium text-gray-700 mb-1">Donation Category *</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                            </svg>
+                                        </div>
+                                        <select
+                                                id="categoryId"
+                                                formControlName="categoryId"
+                                                (change)="onCategoryChange()"
+                                                class="w-full pl-10 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                [class.border-red-500]="donateForm.get('categoryId')?.invalid && donateForm.get('categoryId')?.touched"
+                                        >
+                                            <option value="" disabled selected>Select a category</option>
+                                            @for (category of categories; track category.id) {
+                                                <option [value]="category.id">{{ category.categoryName }}</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    @if (donateForm.get('categoryId')?.invalid && donateForm.get('categoryId')?.touched) {
+                                        <p class="text-red-500 text-sm mt-1">{{ getErrorMessage('categoryId') }}</p>
+                                    }
+                                </div>
+
+                                <!-- Amount Field -->
+                                <div class="mb-6 w-full">
+                                    <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Donation Amount ($)
+                                        @if (showPaymentElement) {
+                                            <span class="text-red-500">*</span>
+                                        } @else {
+                                            <span class="text-gray-500">(Optional)</span>
+                                        }
+                                    </label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500">$</span>
+                                        </div>
+                                        <input
+                                                type="number"
+                                                id="amount"
+                                                formControlName="amount"
+                                                (input)="onAmountChange()"
+                                                class="w-full pl-8 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                [class.border-red-500]="donateForm.get('amount')?.invalid && donateForm.get('amount')?.touched"
+                                                placeholder="Enter amount"
+                                                min="1"
+                                                step="1"
+                                        >
+                                    </div>
+                                    @if (donateForm.get('amount')?.invalid && donateForm.get('amount')?.touched) {
+                                        <p class="text-red-500 text-sm mt-1">{{ getErrorMessage('amount') }}</p>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Description Field -->
+                            <div class="mb-6">
+                                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 pt-4 flex pointer-events-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                                        </svg>
+                                    </div>
+                                    <textarea
+                                            id="description"
+                                            formControlName="description"
+                                            rows="4"
+                                            class="w-full pl-10 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            [class.border-red-500]="donateForm.get('description')?.invalid && donateForm.get('description')?.touched"
+                                            placeholder="Describe your donation and how you'd like it to help"
+                                    ></textarea>
+                                </div>
+                                @if (donateForm.get('description')?.invalid && donateForm.get('description')?.touched) {
+                                    <p class="text-red-500 text-sm mt-1">{{ getErrorMessage('description') }}</p>
+                                }
+                            </div>
+
+                            <!-- File Attachments -->
+                            <div class="mb-6">
+                                <label for="file-upload" class="block text-sm font-medium text-gray-700 mb-1">Attachments (Optional)</label>
+                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                    <div class="space-y-1 text-center">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <div class="flex text-sm text-gray-600">
+                                            <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
+                                                <span>Upload files</span>
+                                                <input
+                                                        id="file-upload"
+                                                        name="file-upload"
+                                                        type="file"
+                                                        class="sr-only"
+                                                        multiple
+                                                        (change)="onFileChange($event)"
+                                                >
+                                            </label>
+                                            <p class="pl-1">or drag and drop</p>
+                                        </div>
+                                        <p class="text-xs text-gray-500">
+                                            PNG, JPG, GIF, PDF up to 10MB
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- File Preview -->
+                                @if (previewUrls.length > 0) {
+                                    <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        @for (url of previewUrls; track url; let i = $index) {
+                                            <div class="relative group">
+                                                @if (selectedFiles[i].type.startsWith('image/')) {
+                                                    <img [src]="url" alt="Preview" class="h-24 w-full object-cover rounded-md">
+                                                } @else {
+                                                    <div class="h-24 w-full bg-gray-100 flex items-center justify-center rounded-md">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                        </svg>
+                                                    </div>
+                                                }
+                                                <button
+                                                        type="button"
+                                                        (click)="removeFile(i)"
+                                                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        aria-label="Remove file"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                                <p class="text-xs text-gray-500 truncate mt-1">{{ selectedFiles[i].name }}</p>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Payment Information (only shown for financial donations) -->
+                            @if (showPaymentElement) {
+                                <div class="mt-8 pt-6 border-t border-gray-200">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Payment Information</h3>
+
+                                    <!-- Stripe Card Element -->
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Card Details *</label>
+                                        <div
+                                            #cardElement
+                                            class="min-h-[40px] p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+                                        ></div>
+                                        <div id="card-errors" class="text-red-500 text-sm mt-1"></div>
+                                    </div>
+
+                                    <div class="text-sm text-gray-500 mt-2 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                        </svg>
+                                        <span>Your payment is secured with SSL encryption</span>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Submit Button -->
+                            <div class="mt-8">
+                                <button
+                                        type="submit"
+                                        class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 hover:-translate-y-0.5 transition-all disabled:bg-gray-400 flex items-center justify-center"
+                                        [disabled]="donateForm.invalid || isSubmitting || paymentProcessing"
+                                >
+                                    @if (isSubmitting || paymentProcessing) {
+                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        @if (paymentProcessing) {
+                                            Processing Payment...
+                                        } @else {
+                                            Submitting Donation...
+                                        }
+                                    } @else {
+                                        Complete Donation
+                                    }
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section class="impact-section bg-gray-50">
+        <div class="container mx-auto px-4 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Your Impact</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    See how your donations make a difference in the lives of those in need of medical assistance.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <div class="bg-blue-100 rounded-full p-4 inline-flex mb-4 text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 01-2-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Medical Supplies</h3>
+                    <p class="text-gray-600">
+                        Your donations help provide essential medical supplies to clinics and hospitals in underserved areas.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <div class="bg-blue-100 rounded-full p-4 inline-flex mb-4 text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Medical Procedures</h3>
+                    <p class="text-gray-600">
+                        Fund life-saving surgeries and medical procedures for those who cannot afford them.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <div class="bg-blue-100 rounded-full p-4 inline-flex mb-4 text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Healthcare Access</h3>
+                    <p class="text-gray-600">
+                        Support programs that bring healthcare services to remote and underserved communities.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container mx-auto px-4 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Donor Testimonials</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Hear from our donors about the impact they've made through their contributions to ShareHope.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-4">
+                            <img src="https://intranet.youcode.ma/storage/users/profile/789-1696616018.jpg" alt="John Doe" class="w-10 h-10 rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Saifi Walid</h3>
+                            <p class="text-sm text-gray-500">Regular Donor</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "I've been donating to ShareHope for over a year now, and it's incredible to see the direct impact my contributions have made. The transparency and regular updates make me confident that my donations are truly making a difference."
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-4">
+                            <img src="https://intranet.youcode.ma/storage/users/profile/974-1696615908.jpg" alt="Maria Smith" class="w-10 h-10 rounded-full object-cover">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">Hafsa Elmoatassim Billah</h3>
+                            <p class="text-sm text-gray-500">Monthly Donor</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "After seeing a success story about a child who received life-saving surgery through ShareHope, I knew I had to get involved. The monthly donation process is seamless, and I love receiving updates about the people my donations have helped."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section bg-gray-50">
+        <div class="container mx-auto px-4 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Find answers to common questions about donating through ShareHope.
+                </p>
+            </div>
+
+            <div class="max-w-3xl mx-auto">
+                @for (faq of faqs; track $index) {
+                    <div class="mb-4">
+                        <button
+                                (click)="toggleFaq($index)"
+                                class="w-full flex justify-between items-center bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                                [attr.aria-expanded]="faq.isOpen"
+                        >
+                            <span class="text-lg font-medium text-gray-800">{{ faq.question }}</span>
+                            <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-6 w-6 text-blue-600 transition-transform"
+                                    [ngClass]="{'transform rotate-180': faq.isOpen}"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        @if (faq.isOpen) {
+                            <div class="bg-white p-4 rounded-b-lg shadow-md mt-1 text-gray-600">
+                                {{ faq.answer }}
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+</div>
