@@ -41,6 +41,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/public/pages/article-detail/article-detail.component')
             .then(m => m.ArticleDetailComponent)
+      },
+      {
+        path: 'donate',
+        loadComponent: () =>
+          import('./features/donate/pages/donate/donate.component')
+            .then(m => m.DonateComponent),
+        canActivate: [AuthGuard]
       }
     ]
   },
