@@ -12,7 +12,7 @@ export class ArticleService {
   constructor(private http: HttpClient) {
   }
 
-  getAllArticles(page: number = 0, size: number = 3): Observable<PaginatedResponse<ArticleProjectionDTO>> {
+  getAllArticles(page: number = 0, size: number = 10): Observable<PaginatedResponse<ArticleProjectionDTO>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -21,5 +21,17 @@ export class ArticleService {
 
   getArticleById(id: number): Observable<ArticleResponseDTO> {
     return this.http.get<ArticleResponseDTO>(`${this.apiUrl}/${id}`);
+  }
+
+  createArticle(formData: FormData): Observable<ArticleResponseDTO> {
+    return this.http.post<ArticleResponseDTO>(this.apiUrl, formData)
+  }
+
+  updateArticle(id: number, formData: FormData): Observable<ArticleResponseDTO> {
+    return this.http.put<ArticleResponseDTO>(`${this.apiUrl}/${id}`, formData)
+  }
+
+  deleteArticle(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`)
   }
 }

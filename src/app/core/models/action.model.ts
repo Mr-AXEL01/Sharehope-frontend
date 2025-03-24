@@ -1,3 +1,5 @@
+import {DonationStatus} from './donation.model';
+
 export interface ActionCreateDTO {
   amount: number;
   description: string;
@@ -12,4 +14,8 @@ export interface ActionEmbeddedDTO {
   createdAt: string;
   actionType: string;
   status: string;
+}
+
+export interface ActionStatusDTO {
+  status: DonationStatus
 }

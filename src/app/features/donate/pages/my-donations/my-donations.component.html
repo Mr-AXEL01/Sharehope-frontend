@@ -1,0 +1,413 @@
+<div class="my-donations-container">
+  <!-- Hero Section -->
+  <section class="donations-hero-section">
+    <div class="hero-overlay"></div>
+    <div class="container mx-auto px-4 py-16 relative z-10">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+          My Donations
+        </h1>
+        <p class="text-lg text-gray-700 text-opacity-90">
+          Track and manage your contributions to medical aid initiatives.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Donations Content Section -->
+  <section class="donations-content-section">
+    <div class="container mx-auto px-4 py-12">
+      <!-- Loading State -->
+      @if (isLoading) {
+        <div class="flex justify-center items-center py-12">
+          <app-loading-spinner [message]="'Loading your donations...'" [size]="'large'"></app-loading-spinner>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (error) {
+        <div class="mb-8">
+          <app-alert [type]="'error'" [message]="error" [dismissible]="true" (dismissed)="error = null"></app-alert>
+        </div>
+      }
+
+      <!-- Filters and Search -->
+      @if (!isLoading && donations.length > 0) {
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">Filter Donations</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Status Filter -->
+            <div>
+              <label for="status-filter" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <div class="relative">
+                <select
+                  id="status-filter"
+                  [(ngModel)]="statusFilter"
+                  class="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="CONFIRMED">confirmed</option>
+                  <option value="DELIVERED">delivered</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Date Filter -->
+            <div>
+              <label for="date-filter" class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+              <div class="relative">
+                <select
+                  id="date-filter"
+                  [(ngModel)]="dateFilter"
+                  class="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                >
+                  <option value="all">All Time</option>
+                  <option value="last-day">Last day</option>
+                  <option value="last-week">Last Week</option>
+                  <option value="last-month">Last Month</option>
+                  <option value="last-year">Last Year</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Search -->
+            <div class="md:col-span-2">
+              <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  id="search"
+                  [(ngModel)]="searchQuery"
+                  placeholder="Search by description, category, or ID..."
+                  class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 flex justify-end gap-2">
+            <button
+              (click)="resetFilters()"
+              class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              Reset
+            </button>
+            <button
+              (click)="applyFilters()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Apply Filters
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- No Donations State -->
+      @if (!isLoading && donations.length === 0) {
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+          <div class="bg-blue-100 rounded-full p-4 inline-flex mb-4 text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">No Donations Yet</h2>
+          <p class="text-gray-600 max-w-md mx-auto mb-6">
+            You haven't made any donations yet. Start making a difference by contributing to a medical aid initiative.
+          </p>
+          <a [routerLink]="['/donate']" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Make Your First Donation
+          </a>
+        </div>
+      }
+
+      <!-- No Results After Filtering -->
+      @if (!isLoading && donations.length > 0 && filteredDonations.length === 0) {
+        <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+          <div class="bg-yellow-100 rounded-full p-4 inline-flex mb-4 text-yellow-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">No Matching Donations</h2>
+          <p class="text-gray-600 max-w-md mx-auto mb-6">
+            No donations match your current filters. Try adjusting your search criteria.
+          </p>
+          <button
+            (click)="resetFilters()"
+            class="inline-block px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Reset Filters
+          </button>
+        </div>
+      }
+
+      <!-- Donations List -->
+      @if (!isLoading && filteredDonations.length > 0) {
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <!-- Desktop View -->
+          <div class="hidden md:block">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ID
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Amount
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Category
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                @for (donation of filteredDonations; track donation.id) {
+                  <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      #{{ donation.id }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {{ formatDate(donation.createdAt) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                      {{ formatAmount(donation.amount) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {{ donation.category.categoryName }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span [class]="'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + getStatusClass(donation.donationStatus)">
+                        <span [innerHTML]="getStatusIcon(donation.donationStatus)" class="mr-1"></span>
+                        {{ donation.donationStatus }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <button
+                        (click)="viewDonationDetails(donation)"
+                        class="text-blue-600 hover:text-blue-900 font-medium"
+                      >
+                        View Details
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Mobile View -->
+          <div class="md:hidden">
+            <div class="divide-y divide-gray-200">
+              @for (donation of filteredDonations; track donation.id) {
+                <div class="p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <div>
+                      <p class="text-sm font-medium text-gray-900">Donation #{{ donation.id }}</p>
+                      <p class="text-xs text-gray-500">{{ formatDate(donation.createdAt) }}</p>
+                    </div>
+                    <span [class]="'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ' + getStatusClass(donation.donationStatus)">
+                      <span [innerHTML]="getStatusIcon(donation.donationStatus)" class="mr-1"></span>
+                      {{ donation.donationStatus }}
+                    </span>
+                  </div>
+                  <div class="mt-2">
+                    <p class="text-sm text-gray-600">Category: <span class="font-medium">{{ donation.category.categoryName }}</span></p>
+                    <p class="text-sm text-gray-600">Amount: <span class="font-medium">{{ formatAmount(donation.amount) }}</span></p>
+                    <p class="text-sm text-gray-600 mt-1">{{ donation.description | truncate:100 }}</p>
+                  </div>
+                  <div class="mt-3">
+                    <button
+                      (click)="viewDonationDetails(donation)"
+                      class="text-sm text-blue-600 hover:text-blue-900 font-medium"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        @if (totalPages > 1) {
+          <div class="mt-6 flex justify-center">
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <button
+                (click)="goToPage(currentPage - 1)"
+                [disabled]="currentPage === 0"
+                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium"
+                [class.text-gray-500]="currentPage !== 0"
+                [class.hover:bg-gray-50]="currentPage !== 0"
+                [class.text-gray-300]="currentPage === 0"
+                [class.cursor-not-allowed]="currentPage === 0"
+              >
+                <span class="sr-only">Previous</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </button>
+
+              @for (i of [0, 1, 2, 3, 4]; track i) {
+                @if (currentPage - 2 + i >= 0 && currentPage - 2 + i < totalPages) {
+                  <button
+                    (click)="goToPage(currentPage - 2 + i)"
+                    [class.bg-blue-50]="currentPage === currentPage - 2 + i"
+                    [class.text-blue-600]="currentPage === currentPage - 2 + i"
+                    [class.border-blue-500]="currentPage === currentPage - 2 + i"
+                    [class.text-gray-700]="currentPage !== currentPage - 2 + i"
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium"
+                  >
+                    {{ currentPage - 2 + i + 1 }}
+                  </button>
+                }
+              }
+
+              <button
+                (click)="goToPage(currentPage + 1)"
+                [disabled]="currentPage === totalPages - 1"
+                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium"
+                [class.text-gray-500]="currentPage !== totalPages - 1"
+                [class.hover:bg-gray-50]="currentPage !== totalPages - 1"
+                [class.text-gray-300]="currentPage === totalPages - 1"
+                [class.cursor-not-allowed]="currentPage === totalPages - 1"
+              >
+                <span class="sr-only">Next</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </nav>
+          </div>
+        }
+      }
+    </div>
+  </section>
+
+  <!-- Donation Detail Modal -->
+  @if (showDetailModal && selectedDonation) {
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="text-2xl font-bold text-gray-800">Donation Details</h2>
+            <button
+              (click)="closeDetailModal()"
+              class="text-gray-500 hover:text-gray-700"
+              aria-label="Close"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <div class="mb-4">
+                <p class="text-sm text-gray-500">Donation ID</p>
+                <p class="text-lg font-medium text-gray-900">#{{ selectedDonation.id }}</p>
+              </div>
+
+              <div class="mb-4">
+                <p class="text-sm text-gray-500">Date</p>
+                <p class="text-lg font-medium text-gray-900">{{ formatDate(selectedDonation.createdAt) }}</p>
+              </div>
+
+              <div class="mb-4">
+                <p class="text-sm text-gray-500">Amount</p>
+                <p class="text-lg font-medium text-gray-900">{{ formatAmount(selectedDonation.amount) }}</p>
+              </div>
+
+              <div class="mb-4">
+                <p class="text-sm text-gray-500">Category</p>
+                <p class="text-lg font-medium text-gray-900">{{ selectedDonation.category.categoryName }}</p>
+              </div>
+
+              <div class="mb-4">
+                <p class="text-sm text-gray-500">Status</p>
+                <span [class]="'px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full ' + getStatusClass(selectedDonation.donationStatus)">
+                  <span [innerHTML]="getStatusIcon(selectedDonation.donationStatus)" class="mr-1"></span>
+                  {{ selectedDonation.donationStatus }}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <div class="mb-4">
+                <p class="text-sm text-gray-500">Description</p>
+                <p class="text-base text-gray-900">{{ selectedDonation.description }}</p>
+              </div>
+
+              @if (selectedDonation.attachmentUrls && selectedDonation.attachmentUrls.length > 0) {
+                <div>
+                  <p class="text-sm text-gray-500 mb-2">Attachments</p>
+                  <div class="grid grid-cols-2 gap-2">
+                    @for (url of selectedDonation.attachmentUrls; track url) {
+                      <div class="relative group">
+                        <a [href]="url" target="_blank" class="block">
+                          <img [src]="url" alt="Attachment" class="w-full h-32 object-cover rounded-md">
+                          <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-all duration-200 rounded-md">
+                            <div class="text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                            </div>
+                          </div>
+                        </a>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="mt-6 pt-6 border-t border-gray-200 flex justify-end">
+            <button
+              (click)="closeDetailModal()"
+              class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors mr-2"
+            >
+              Close
+            </button>
+            @if (selectedDonation.donationStatus === 'PENDING' && selectedDonation.category.categoryName === 'Financial') {
+              <button
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Complete Payment
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+

@@ -2,9 +2,9 @@ import {Routes} from '@angular/router';
 import {authRoutes} from './features/auth';
 import {AdminGuard} from './core/guards/admin.guard';
 import {AuthGuard} from './core/guards/auth.guard';
-import {DashboardComponent} from './features/dashboard/pages/dashboard/dashboard.component';
 import {NotAuthGuard} from './core/guards/not-auth.guard';
 import {LayoutComponent} from './core/layout/pages/layout/layout.component';
+import {AdminLayoutComponent} from './core/layout/pages/admin-layout/admin-layout.component';
 
 export const routes: Routes = [
   {
@@ -48,7 +48,28 @@ export const routes: Routes = [
           import('./features/donate/pages/donate/donate.component')
             .then(m => m.DonateComponent),
         canActivate: [AuthGuard]
-      }
+      },
+      {
+        path: 'my-donations',
+        loadComponent: () =>
+          import('./features/donate/pages/my-donations/my-donations.component')
+            .then(m=>m.MyDonationsComponent),
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'request',
+        loadComponent: () =>
+          import('./features/request/pages/request/request.component')
+            .then(m => m.RequestComponent),
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'my-requests',
+        loadComponent: () =>
+          import('./features/request/pages/my-requests/my-requests.component')
+            .then(m=>m.MyRequestsComponent),
+        canActivate: [AuthGuard]
+      },
     ]
   },
   {
@@ -56,7 +77,44 @@ export const routes: Routes = [
     children: authRoutes,
     canActivate: [NotAuthGuard],
   },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard, AdminGuard] },
+  {
+    path: 'dashboard',
+    component: AdminLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/admin/pages/dashboard/dashboard.component')
+            .then(m => m.DashboardComponent)
+      },
+      {
+        path: "articles",
+        loadComponent: () =>
+          import("./features/admin/pages/article-list/article-list.component")
+            .then((m) => m.ArticleListComponent),
+      },
+      {
+        path: "articles/create",
+        loadComponent: () =>
+          import("./features/admin/components/article-form/article-form.component")
+            .then((m) => m.ArticleFormComponent),
+      },
+      {
+        path: "articles/edit/:id",
+        loadComponent: () =>
+          import("./features/admin/components/article-form/article-form.component")
+            .then((m) => m.ArticleFormComponent),
+      },
+      // {
+      //   path: "donations",
+      //   loadComponent: () =>
+      //     import("./features/admin/pages/donation-list/donation-list.component").then(
+      //       (m) => m.DonationListComponent,
+      //     ),
+      // },
+    ],
+    canActivate: [AuthGuard, AdminGuard]
+  },
   {
     path: "**",
     redirectTo: ""

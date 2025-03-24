@@ -1,0 +1,171 @@
+<div class="dashboard-container">
+    <!-- Page Header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
+        <p class="mt-1 text-sm text-gray-500">
+            Welcome to the ShareHope admin dashboard. Here's an overview of your platform.
+        </p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        @for (stat of stats; track stat.label) {
+            <div class="bg-white rounded-lg shadow p-6" [class]="'border-l-4 border-' + stat.color + '-500'">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full mr-4" [class]="'bg-' + stat.color + '-100'">
+                        <span [innerHTML]="getIconSvg(stat.icon)" [class]="'h-6 w-6 text-' + stat.color + '-600'"></span>
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">{{ stat.label }}</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ stat.value }}</p>
+                    </div>
+                </div>
+                @if (stat.trend) {
+                    <div class="mt-4 text-sm flex items-center" [class]="stat.trend.isUp ? 'text-green-600' : 'text-red-600'">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="stat.trend.isUp ? 'M5 10l7-7m0 0l7 7m-7-7v18' : 'M19 14l-7 7m0 0l-7-7m7 7V3'" />
+                        </svg>
+                        <span>{{ stat.trend.value }}</span>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Quick Actions -->
+<!--    <div class="bg-white rounded-lg shadow mb-8">-->
+<!--        <div class="px-6 py-4 border-b border-gray-200">-->
+<!--            <h2 class="text-lg font-medium text-gray-900">Quick Actions</h2>-->
+<!--        </div>-->
+<!--        <div class="p-6">-->
+<!--            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">-->
+<!--                @for (action of quickActions; track action.label) {-->
+<!--                    <a [routerLink]="[action.route]" [class]="action.primary ?-->
+<!--                'block w-full py-3 px-4 rounded-md shadow bg-blue-600 text-white font-medium text-center hover:bg-blue-700 transition-colors' :-->
+<!--                'block w-full py-3 px-4 rounded-md shadow bg-gray-200 text-gray-800 font-medium text-center hover:bg-gray-300 transition-colors'">-->
+<!--                        {{ action.label }}-->
+<!--                    </a>-->
+<!--                }-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <!-- Recent Donations and Requests -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Recent Donations -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-lg font-medium text-gray-900">Recent Donations</h2>
+                <a [routerLink]="['/dashboard/donations']" class="text-sm font-medium text-blue-600 hover:text-blue-800">View all</a>
+            </div>
+            <div class="overflow-x-auto">
+                @if (isLoading) {
+                    <div class="flex justify-center py-6">
+                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                    </div>
+                } @else if (recentDonations.length === 0) {
+                    <div class="text-center py-6 text-gray-500">
+                        No recent donations found.
+                    </div>
+                } @else {
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Donor</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @for (donation of recentDonations; track donation.id) {
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                                {{ getInitials(donation.user.username) }}
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ donation.user.username }}</div>
+                                                <div class="text-sm text-gray-500">{{ donation.user.email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">\${{ donation.amount.toFixed(2) }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ donation.category.categoryName }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span [class]="'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + getStatusClass(donation.donationStatus)">
+                          {{ donation.donationStatus }}
+                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+
+        <!-- Recent Requests -->
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-lg font-medium text-gray-900">Recent Requests</h2>
+                <a [routerLink]="['/dashboard/requests']" class="text-sm font-medium text-blue-600 hover:text-blue-800">View all</a>
+            </div>
+            <div class="overflow-x-auto">
+                @if (isLoading) {
+                    <div class="flex justify-center py-6">
+                        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                    </div>
+                } @else if (recentRequests.length === 0) {
+                    <div class="text-center py-6 text-gray-500">
+                        No recent requests found.
+                    </div>
+                } @else {
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requester</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @for (request of recentRequests; track request.id) {
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                                {{ getInitials(request.user.username) }}
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ request.user.username }}</div>
+                                                <div class="text-sm text-gray-500">{{ request.user.email }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">\${{ request.amount.toFixed(2) }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ request.category.categoryName }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span [class]="'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + getStatusClass(request.needStatus)">
+                          {{ request.needStatus }}
+                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>

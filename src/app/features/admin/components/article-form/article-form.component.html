@@ -1,0 +1,189 @@
+<div class="article-form-container">
+  <!-- Page Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">{{ isEditMode ? 'Edit Article' : 'Create New Article' }}</h1>
+    <p class="mt-1 text-sm text-gray-500">
+      {{ isEditMode ? 'Update the details of an existing article.' : 'Create a new success story or article to share with your community.' }}
+    </p>
+  </div>
+
+  <!-- Alerts -->
+  @if (error) {
+    <div class="mb-6">
+      <app-alert [type]="'error'" [message]="error" [dismissible]="true" (dismissed)="error = null"></app-alert>
+    </div>
+  }
+
+  @if (success) {
+    <div class="mb-6">
+      <app-alert [type]="'success'" [message]="success" [dismissible]="true" (dismissed)="success = null"></app-alert>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="flex justify-center items-center py-12">
+      <app-loading-spinner [message]="'Loading article data...'" [size]="'large'"></app-loading-spinner>
+    </div>
+  }
+
+  <!-- Article Form -->
+  @if (!isLoading) {
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
+        <!-- Title Field -->
+        <div class="mb-6">
+          <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Title *</label>
+          <input
+            type="text"
+            id="title"
+            formControlName="title"
+            class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-500]="articleForm.get('title')?.invalid && articleForm.get('title')?.touched"
+            placeholder="Enter article title"
+          >
+          @if (articleForm.get('title')?.invalid && articleForm.get('title')?.touched) {
+            <p class="text-red-500 text-sm mt-1">{{ getErrorMessage('title') }}</p>
+          }
+          <p class="text-xs text-gray-500 mt-1">Title must be between 3 and 100 characters.</p>
+        </div>
+
+        <!-- Description Field -->
+        <div class="mb-6">
+          <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="3"
+            class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-500]="articleForm.get('description')?.invalid && articleForm.get('description')?.touched"
+            placeholder="Enter a brief description of the article"
+          ></textarea>
+          @if (articleForm.get('description')?.invalid && articleForm.get('description')?.touched) {
+            <p class="text-red-500 text-sm mt-1">{{ getErrorMessage('description') }}</p>
+          }
+          <p class="text-xs text-gray-500 mt-1">Description must be between 3 and 255 characters.</p>
+        </div>
+
+        <!-- Content Field -->
+        <div class="mb-6">
+          <label for="content" class="block text-sm font-medium text-gray-700 mb-1">Content *</label>
+          <textarea
+            id="content"
+            formControlName="content"
+            rows="10"
+            class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-500]="articleForm.get('content')?.invalid && articleForm.get('content')?.touched"
+            placeholder="Enter the full content of the article"
+          ></textarea>
+          @if (articleForm.get('content')?.invalid && articleForm.get('content')?.touched) {
+            <p class="text-red-500 text-sm mt-1">{{ getErrorMessage('content') }}</p>
+          }
+        </div>
+
+        <!-- Existing Attachments -->
+        @if (isEditMode && existingAttachments.length > 0) {
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Existing Attachments</label>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              @for (url of existingAttachments; track url; let i = $index) {
+                <div class="relative group">
+                  <img [src]="url" alt="Attachment" class="h-24 w-full object-cover rounded-md">
+                  <button
+                    type="button"
+                    (click)="removeExistingAttachment(i)"
+                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Remove attachment"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              }
+            </div>
+            <p class="text-xs text-gray-500 mt-1">These images are currently attached to the article. Remove any you want to replace.</p>
+          </div>
+        }
+
+        <!-- File Attachments -->
+        <div class="mb-6">
+          <label for="file-upload" class="block text-sm font-medium text-gray-700 mb-1">Attachments</label>
+          <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+            <div class="space-y-1 text-center">
+              <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <div class="flex text-sm text-gray-600">
+                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
+                  <span>Upload files</span>
+                  <input
+                    id="file-upload"
+                    name="file-upload"
+                    type="file"
+                    class="sr-only"
+                    multiple
+                    (change)="onFileChange($event)"
+                  >
+                </label>
+                <p class="pl-1">or drag and drop</p>
+              </div>
+              <p class="text-xs text-gray-500">
+                PNG, JPG, GIF up to 10MB
+              </p>
+            </div>
+          </div>
+
+          <!-- File Preview -->
+          @if (previewUrls.length > 0) {
+            <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+              @for (url of previewUrls; track url; let i = $index) {
+                <div class="relative group">
+                  <img [src]="url" alt="Preview" class="h-24 w-full object-cover rounded-md">
+                  <button
+                    type="button"
+                    (click)="removeFile(i)"
+                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Remove file"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                  <p class="text-xs text-gray-500 truncate mt-1">{{ selectedFiles[i].name }}</p>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end">
+          <button
+            type="button"
+            [routerLink]="['/dashboard/articles']"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center"
+            [disabled]="articleForm.invalid || isSubmitting"
+          >
+            @if (isSubmitting) {
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ isEditMode ? 'Updating...' : 'Creating...' }}
+            } @else {
+              {{ isEditMode ? 'Update Article' : 'Create Article' }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>
+

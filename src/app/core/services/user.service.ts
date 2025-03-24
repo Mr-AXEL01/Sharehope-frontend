@@ -3,6 +3,14 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {UserAuthResponse, UserResponse, UserUpdateDTO} from '../models/user.model';
 
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,5 +35,9 @@ export class UserService {
 
   updatePassword(id: number, passwordData: { currentPassword: string; newPassword: string }): Observable<UserResponse> {
     return this.http.patch<UserResponse>(`${this.apiUrl}/${id}/password`, passwordData);
+  }
+
+  getAllUsers(page: number, size: number): Observable<PaginatedResponse<UserResponse>> {
+    return this.http.get<PaginatedResponse<UserResponse>>(`${this.apiUrl}?page=${page}&size=${size}`);
   }
 }

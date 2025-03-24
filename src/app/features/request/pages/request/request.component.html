@@ -1,0 +1,369 @@
+<div class="requests-container">
+  <!-- Hero Section -->
+  <section class="relative bg-cover bg-center min-h-[400px] flex items-center md:min-h-[400px]" style="background-image: url('/images/hero-bg.jpg')">
+    <div class="absolute inset-0 bg-gradient-to-tr from-gray-900 to-black/50"></div>
+    <div class="container mx-auto px-4 py-20 relative z-10">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+          Request Medical Aid
+        </h1>
+        <p class="text-xl text-white text-opacity-90 mb-8">
+          Submit your request for medical assistance. We're here to help connect you with the resources you need.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Request Form Section -->
+  <section class="request-form-section">
+    <div class="container mx-auto px-4 py-16">
+      <div class="max-w-3xl mx-auto">
+        <!-- Loading State -->
+        @if (isLoading) {
+          <div class="flex justify-center items-center py-12">
+            <app-loading-spinner [message]="'Loading request form...'" [size]="'large'"></app-loading-spinner>
+          </div>
+        }
+
+        <!-- Error State -->
+        @if (errorMessage) {
+          <div class="mb-8">
+            <app-alert [type]="'error'" [message]="errorMessage" [dismissible]="true" (dismissed)="errorMessage = null"></app-alert>
+          </div>
+        }
+
+        <!-- Success State -->
+        @if (requestSuccess) {
+          <div class="bg-green-100 border border-green-200 text-green-700 px-6 py-8 rounded-lg mb-8 text-center">
+            <div class="flex justify-center mb-4">
+              <div class="bg-green-200 rounded-full p-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Request Submitted Successfully!</h2>
+            <p class="text-lg mb-4">Your request for medical aid has been received and is being reviewed.</p>
+            <p class="text-sm mb-6">You will be redirected to your requests page shortly...</p>
+            <div class="flex justify-center space-x-4">
+              <a [routerLink]="['/my-requests']" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                View My Requests
+              </a>
+              <a [routerLink]="['/']" class="px-6 py-2 border border-green-600 text-green-600 rounded-md hover:bg-green-50 transition-colors">
+                Return Home
+              </a>
+            </div>
+          </div>
+        }
+
+        <!-- Request Form -->
+        @if (!isLoading && !requestSuccess) {
+          <div class="bg-white rounded-lg shadow-lg p-8 border border-gray-100">
+            <div class="flex items-center mb-8">
+              <div class="p-3 bg-blue-100 rounded-full mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+              </div>
+              <h2 class="text-2xl font-semibold text-gray-800">Request Details</h2>
+            </div>
+
+            <form [formGroup]="requestForm" (ngSubmit)="submitRequest()" class="space-y-6">
+              <!-- Category Field -->
+              <div class="mb-6">
+                <label for="categoryId" class="block text-sm font-medium text-gray-700 mb-1">Request Category *</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
+                  <select
+                    id="categoryId"
+                    formControlName="categoryId"
+                    (change)="onCategoryChange()"
+                    class="w-full pl-10 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-right-0.5 bg-no-repeat bg-[length:1.5em_1.5em] pr-10"
+                    [class.border-red-500]="requestForm.get('categoryId')?.invalid && requestForm.get('categoryId')?.touched"
+                  >
+                    <option value="" disabled selected>Select a category</option>
+                    @for (category of categories; track category.id) {
+                      <option [value]="category.id">{{ category.categoryName }}</option>
+                    }
+                  </select>
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+                @if (requestForm.get('categoryId')?.invalid && requestForm.get('categoryId')?.touched) {
+                  <p class="text-red-500 text-sm mt-1">{{ getErrorMessage('categoryId') }}</p>
+                }
+              </div>
+
+              <!-- Amount Field -->
+              <div class="mb-6">
+                <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">
+                  Estimated Amount Needed ($) *
+                </label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500">$</span>
+                  </div>
+                  <input
+                    type="number"
+                    id="amount"
+                    formControlName="amount"
+                    class="w-full pl-8 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    [class.border-red-500]="requestForm.get('amount')?.invalid && requestForm.get('amount')?.touched"
+                    placeholder="Enter amount needed"
+                    min="1"
+                    step="1"
+                  >
+                </div>
+                @if (requestForm.get('amount')?.invalid && requestForm.get('amount')?.touched) {
+                  <p class="text-red-500 text-sm mt-1">{{ getErrorMessage('amount') }}</p>
+                }
+                <p class="text-xs text-gray-500 mt-1">Please provide an estimate of the funds needed for your medical assistance.</p>
+              </div>
+
+              <!-- Description Field -->
+              <div class="mb-6">
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                <div class="relative">
+                  <div class="absolute left-0 pl-3 pt-4 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                  </div>
+                  <textarea
+                    id="description"
+                    formControlName="description"
+                    rows="4"
+                    class="w-full pl-10 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    [class.border-red-500]="requestForm.get('description')?.invalid && requestForm.get('description')?.touched"
+                    placeholder="Describe your medical need in detail"
+                  ></textarea>
+                </div>
+                @if (requestForm.get('description')?.invalid && requestForm.get('description')?.touched) {
+                  <p class="text-red-500 text-sm mt-1">{{ getErrorMessage('description') }}</p>
+                }
+                <p class="text-xs text-gray-500 mt-1">Please provide details about your medical condition, required treatment, and any other relevant information.</p>
+              </div>
+
+              <!-- File Attachments -->
+              <div class="mb-6">
+                <label for="file-upload" class="block text-sm font-medium text-gray-700 mb-1">Medical Documents (Optional)</label>
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                  <div class="space-y-1 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div class="flex text-sm text-gray-600">
+                      <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
+                        <span>Upload files</span>
+                        <input
+                          id="file-upload"
+                          name="file-upload"
+                          type="file"
+                          class="sr-only"
+                          multiple
+                          (change)="onFileChange($event)"
+                        >
+                      </label>
+                      <p class="pl-1">or drag and drop</p>
+                    </div>
+                    <p class="text-xs text-gray-500">
+                      Medical records, prescriptions, or any supporting documents (PNG, JPG, PDF up to 10MB)
+                    </p>
+                  </div>
+                </div>
+
+                <!-- File Preview -->
+                @if (previewUrls.length > 0) {
+                  <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    @for (url of previewUrls; track url; let i = $index) {
+                      <div class="relative group">
+                        @if (selectedFiles[i].type.startsWith('image/')) {
+                          <img [src]="url" alt="Preview" class="h-24 w-full object-cover rounded-md">
+                        } @else {
+                          <div class="h-24 w-full bg-gray-100 flex items-center justify-center rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                        }
+                        <button
+                          type="button"
+                          (click)="removeFile(i)"
+                          class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          aria-label="Remove file"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                        <p class="text-xs text-gray-500 truncate mt-1">{{ selectedFiles[i].name }}</p>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Privacy Notice -->
+              <div class="bg-blue-50 p-4 rounded-md">
+                <h3 class="text-sm font-medium text-blue-800 mb-2">Privacy Notice</h3>
+                <p class="text-xs text-blue-700">
+                  Your medical information will be kept confidential and only shared with healthcare providers and donors as necessary to fulfill your request. By submitting this form, you consent to the processing of your data as described in our Privacy Policy.
+                </p>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="mt-8">
+                <button
+                  type="submit"
+                  class="w-full inline-block bg-blue-600 text-white font-semibold py-3 px-4 rounded-md hover:bg-blue-700 hover:-translate-y-0.5 transition-all disabled:bg-gray-400 flex items-center justify-center text-center"
+                  [disabled]="requestForm.invalid || isSubmitting"
+                >
+                  @if (isSubmitting) {
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Submitting Request...
+                  } @else {
+                    Submit Request
+                  }
+                </button>
+              </div>
+            </form>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="how-it-works-section bg-gray-50">
+    <div class="container mx-auto px-4 py-16">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">How It Works</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Understanding the process of requesting and receiving medical aid through ShareHope.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+          <div class="bg-blue-100 rounded-full p-4 inline-flex mb-4 text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">1. Submit Request</h3>
+          <p class="text-gray-600">
+            Fill out the request form with details about your medical needs and any supporting documentation.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+          <div class="bg-blue-100 rounded-full p-4 inline-flex mb-4 text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">2. Verification</h3>
+          <p class="text-gray-600">
+            Our team reviews your request to verify the medical need and required documentation.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+          <div class="bg-blue-100 rounded-full p-4 inline-flex mb-4 text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">3. Matching</h3>
+          <p class="text-gray-600">
+            Your request is matched with donors who are interested in supporting your specific medical need.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+          <div class="bg-blue-100 rounded-full p-4 inline-flex mb-4 text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">4. Fulfillment</h3>
+          <p class="text-gray-600">
+            Once funded, we coordinate with healthcare providers to ensure you receive the medical aid you need.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <div class="container mx-auto px-4 py-16">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Find answers to common questions about requesting medical aid through ShareHope.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
+          <button class="w-full text-left p-4 focus:outline-none">
+            <div class="flex justify-between items-center">
+              <h3 class="text-lg font-medium text-gray-800">Who can request medical aid?</h3>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </button>
+          <div class="px-4 pb-4">
+            <p class="text-gray-600">
+              Anyone in need of medical assistance can submit a request. This includes individuals seeking help for themselves or on behalf of family members, as well as healthcare providers requesting support for patients.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
+          <button class="w-full text-left p-4 focus:outline-none">
+            <div class="flex justify-between items-center">
+              <h3 class="text-lg font-medium text-gray-800">What types of medical needs are eligible?</h3>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </button>
+          <div class="px-4 pb-4">
+            <p class="text-gray-600">
+              We support a wide range of medical needs, including but not limited to: surgeries, medications, medical equipment, therapy services, and emergency medical care. Each request is evaluated based on urgency, impact, and feasibility.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-4">
+          <button class="w-full text-left p-4 focus:outline-none">
+            <div class="flex justify-between items-center">
+              <h3 class="text-lg font-medium text-gray-800">How long does the approval process take?</h3>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </button>
+          <div class="px-4 pb-4">
+            <p class="text-gray-600">
+              The verification process typically takes 3-5 business days. Urgent medical needs are prioritized and may be processed more quickly. You'll receive updates on your request status through your account dashboard.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

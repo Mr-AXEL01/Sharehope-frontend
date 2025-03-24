@@ -1,24 +1,21 @@
 import {CategoryEmbeddedDTO} from './category.model';
 import {UserEmbeddedDTO} from './user.model';
 
-export interface DonationResponseDTO {
+export enum NeedStatus {
+  PENDING = "PENDING",
+  CONFIRMED = "CONFIRMED",
+  REJECTED = "REJECTED",
+
+}
+
+export interface NeedResponseDTO {
   id: number;
   amount: number;
   description: string;
-  donationStatus: string;
+  needStatus: NeedStatus;
   category: CategoryEmbeddedDTO;
   user: UserEmbeddedDTO;
   createdAt: string;
   attachmentUrls: string[];
   paymentIntentClientSecret?: string;
 }
-
-export enum DonationStatus {
-  PENDING = "PENDING",
-  CONFIRMED = "CONFIRMED",
-  DELIVERED = "DELIVERED",
-}
-
-
-
-
