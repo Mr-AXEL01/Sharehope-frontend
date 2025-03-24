@@ -14,4 +14,8 @@ export class DonationService {
   createDonation(formData: FormData): Observable<DonationResponseDTO> {
     return this.http.post<DonationResponseDTO>(this.apiUrl, formData);
   }
+
+  getMyDonations(page: number = 0, size: number = 10): Observable<DonationResponseDTO[]> {
+    return this.http.get<DonationResponseDTO[]>(`${this.apiUrl}/myDonations?page=${page}&size=${size}`);
+  }
 }
