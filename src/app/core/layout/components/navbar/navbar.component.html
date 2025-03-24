@@ -23,7 +23,7 @@
         <!-- User Links - Visible when logged in -->
         @if (isLoggedIn) {
           <a [routerLink]="['/donate']" routerLinkActive="text-blue-600 font-medium" class="text-gray-700 hover:text-blue-600 transition-colors">Donate</a>
-          <a [routerLink]="['/requests']" routerLinkActive="text-blue-600 font-medium" class="text-gray-700 hover:text-blue-600 transition-colors">Requests</a>
+          <a [routerLink]="['/request']" routerLinkActive="text-blue-600 font-medium" class="text-gray-700 hover:text-blue-600 transition-colors">Requests</a>
         }
 
         <!-- Admin Links - Visible only for admins -->
